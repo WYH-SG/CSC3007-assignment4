@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>CSC3007 Assignment 4</title>
-  <style>
+<style>
     .tooltip {
         position: absolute;
         text-align: center;
@@ -18,10 +18,28 @@
         border: 1px solid black;
         border-radius: 5px;
     }
-  </style>
+
+    .btnHeader {
+        display: inline-flex;
+        width: auto;
+        padding-left: 50%;
+        padding-right: 50%;
+    }
+
+    #selectBtn {
+        margin-left: 5px;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+    
+</style>
 </head>
 
 <body>
+<div class="btnHeader">
+    <p>Select: </p>
+    <select id="selectBtn"></select>
+</div>
 <svg></svg>
 <div class="tooltip"></div>
 <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -51,6 +69,19 @@ Promise.all([d3.json("links-sample.json"), d3.json("cases-sample.json")]).then(d
 
     console.log("links", data[0]); //links
     console.log("cases", data[1]); //cases
+
+    // Sort the data by given year
+    btnOptions = ["Gender", "Vaccination Status"]
+
+    // Reference from: https://d3-graph-gallery.com/graph/interactivity_button.html
+    // Initialize the button & add the options to the button
+    d3.select("#selectBtn") // Add a button
+    .selectAll('myOptions') // Next 4 lines add the year options
+    .data(btnOptions)
+    .enter()
+    .append('option')
+    .text(function (d) { return d; }) // text showed in the menu
+    .attr("value", function (d) { return d; }) // corresponding value returned by the button
 
     // Create a tooltip that select the div class "tooltip"
     var tooltip = d3.select(".tooltip")
@@ -98,10 +129,9 @@ Promise.all([d3.json("links-sample.json"), d3.json("cases-sample.json")]).then(d
         // Call the tooltip
         tooltip
             .transition()
-            .duration(100)
+            .duration(50)
             .style("opacity", 1)
         tooltip
-            // .html(`${d.properties.Name}` + `<br>` +`Population: ` + `${d.total}`)
             .html(
                 `Age: ` + `${d.age}` + `<br>` +
                 `Date: ` + `${d.date}` + `<br>` +
@@ -119,11 +149,11 @@ Promise.all([d3.json("links-sample.json"), d3.json("cases-sample.json")]).then(d
         d3.select(event.currentTarget)
         .style("stroke", "black")
         .style("stroke-width", 1)
-        
         // Hide the tooltip
         tooltip
-            .transition()
-            .duration(100)
+            .html(``) // delete all the html from before
+            // .transition()
+            // .duration(50)      
             .style("opacity", 0)
     })
 
@@ -166,6 +196,50 @@ Promise.all([d3.json("links-sample.json"), d3.json("cases-sample.json")]).then(d
         d.fx = null;
         d.fy = null;
     }
+
+    // Function to change the circle colors
+    function changeColor(option){
+        // console.log("changeColor");
+
+        if(option == "Gender") {
+            d3.selectAll("circle")
+            .transition()
+            .duration(1000)
+            // Set the color of the circle based on gender
+            .style('fill',function(d) {
+                if(d.gender == "female") {
+                    return "pink";
+                } else {
+                    return "#3489eb";
+                }
+            })
+        } else {
+            d3.selectAll("circle")
+            .transition()
+            .duration(1000)
+            // Set the color of the circle based on gender
+            .style('fill',function(d) {
+                if(d.vaccinated == "no") {
+                    return "red";
+                } else if (d.vaccinated == "partial (1 dose)") {
+                    return "yellow";
+                }
+                else {
+                    return "green";
+                }
+            })
+        }
+    }
+    
+    // Call the function to update the chart based on button click event
+    d3.select("#selectBtn").on("change", function(d) {
+        // recover the option that has been chosen
+        var selectedOption = d3.select(this).property("value")
+        console.log("selectedOption", selectedOption);
+        
+        // run the updateChart function with this selected option
+        changeColor(selectedOption);
+    })
 
 })
 </script>
