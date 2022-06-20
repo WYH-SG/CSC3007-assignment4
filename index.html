@@ -10,7 +10,7 @@
         text-align: center;
         padding: 20px 10px 20px 10px;
         font-family: Arial, Helvetica, sans-serif;
-        font-size: 24px;
+        font-size: 16px;
         text-align: left;
         line-height: 2;
         color: white;
@@ -46,7 +46,7 @@
 
 <script>
 
-let width = 1000, height = 500;
+let width = 1000, height = 600;
 
 // Initialize the SVG by creating the viewbox
 let svg = d3.select("svg")
@@ -152,8 +152,8 @@ Promise.all([d3.json("links-sample.json"), d3.json("cases-sample.json")]).then(d
         // Hide the tooltip
         tooltip
             .html(``) // delete all the html from before
-            // .transition()
-            // .duration(50)      
+            .transition()
+            .duration(1)      
             .style("opacity", 0)
     })
 
@@ -167,7 +167,7 @@ Promise.all([d3.json("links-sample.json"), d3.json("cases-sample.json")]).then(d
     )
     .force("charge", d3.forceManyBody().strength(-3))
     .force("collide", d3.forceCollide().strength(0.5).radius(20))
-    .force('center', d3.forceCenter(width / 2, height / 2))
+    .force('center', d3.forceCenter(width / 2, height / 3))
     .on("tick", d => {
         node
         .attr("cx", d => d.x)
